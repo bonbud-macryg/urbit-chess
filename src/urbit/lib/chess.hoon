@@ -1,6 +1,18 @@
 /-  chess
 =,  chess
+::
+::  /lib/chess.hoon chapters:
+::  %squares
+::  %knight-moves
+::  %rendering
+::  %game-logic
+::  TODO: create chapters for rest of lib
+::
 |%
++|  %squares
+::
+::  return simple facts on ranks,
+::  files, adjacent squares, etc.
 ++  opposite-side
   |=  side=chess-side
   ?-  side
@@ -63,6 +75,7 @@
   =/  nr  (next-rank +.square)
   ?~  nr  ~
   `[-.square u.nr]
+::
 ::  diagonals reckoned filewise (from left to right)
 ++  prev-backward-diagonal-square
   |=  square=chess-square
@@ -96,9 +109,13 @@
     next-file-square
     next-rank-square
   ==
-::  knight moves start from (2 ahead, 1 right)
+::
++|  %knight-moves
+::
+::  knight moves start from (2 forward, 1 right)
 ::  and are counted clockwise
-++  knight-1-square  ::  2 forward, 1 right
+++  knight-1-square
+  ::  2 forward, 1 right
   |=  square=chess-square
   ^-  (unit chess-square)
   %.  square
@@ -107,7 +124,8 @@
     next-rank-square
     next-file-square
   ==
-++  knight-2-square  ::  2 right, 1 forward
+++  knight-2-square
+  ::  2 right, 1 forward
   |=  square=chess-square
   ^-  (unit chess-square)
   %.  square
@@ -116,7 +134,8 @@
     next-file-square
     next-rank-square
   ==
-++  knight-3-square  ::  2 right, 1 backward
+++  knight-3-square
+  ::  2 right, 1 backward
   |=  square=chess-square
   ^-  (unit chess-square)
   %.  square
@@ -125,7 +144,8 @@
     next-file-square
     prev-rank-square
   ==
-++  knight-4-square  ::  2 backward, 1 right
+++  knight-4-square
+  ::  2 backward, 1 right
   |=  square=chess-square
   ^-  (unit chess-square)
   %.  square
@@ -134,7 +154,8 @@
     prev-rank-square
     next-file-square
   ==
-++  knight-5-square  ::  2 backward, 1 left
+++  knight-5-square
+  ::  2 backward, 1 left
   |=  square=chess-square
   ^-  (unit chess-square)
   %.  square
@@ -143,7 +164,8 @@
     prev-rank-square
     prev-file-square
   ==
-++  knight-6-square  ::  2 left, 1 backward
+++  knight-6-square
+  ::  2 left, 1 backward
   |=  square=chess-square
   ^-  (unit chess-square)
   %.  square
@@ -152,7 +174,8 @@
     prev-file-square
     prev-rank-square
   ==
-++  knight-7-square  ::  2 left, 1 forward
+++  knight-7-square
+  ::  2 left, 1 forward
   |=  square=chess-square
   ^-  (unit chess-square)
   %.  square
@@ -161,7 +184,8 @@
     prev-file-square
     next-rank-square
   ==
-++  knight-8-square  ::  2 forward, 1 right
+++  knight-8-square
+  ::  2 forward, 1 right
   |=  square=chess-square
   ^-  (unit chess-square)
   %.  square
@@ -171,6 +195,7 @@
     prev-file-square
   ==
 ++  knight-squares
+  ::  return list of valid knight-moves
   ^-  (list chess-traverser)
   :~  knight-1-square
       knight-2-square
@@ -181,7 +206,13 @@
       knight-7-square
       knight-8-square
   ==
+::
++|  %rendering
+::
+::  render game information
 ++  result-string
+  ::  render game result,
+  ::  which may or may not be null 
   |=  result=(unit chess-result)
   ^-  @t
   ?-  result
@@ -190,10 +221,13 @@
     [~ *]       u.result
   ==
 ++  square-to-algebraic
+  ::  render chess square [%a %1] as 'a1'
   |=  square=chess-square
   ^-  @t
   (cat 3 -.square (scot %ud +.square))
 ++  fen-piece
+  ::  return a piece's side and type
+  ::  for forsyth-edwards notation
   |=  piece=chess-piece
   ^-  @t
   ?-  -.piece
@@ -215,6 +249,8 @@
             ==
   ==
 ++  pgn-piece
+  ::  return piece type for
+  ::  portable game notation
   |=  piece=chess-piece
   ^-  @t
   ?-  +.piece
@@ -226,6 +262,8 @@
     %king    'K'
   ==
 ++  unicode-piece
+  ::  return piece's unicode
+  ::  character based on side and type
   |=  piece=chess-piece
   ^-  @t
   ?-  -.piece
@@ -247,6 +285,8 @@
             ==
   ==
 ++  render-board
+  ::  render board as list of files and ranks
+  ::  TODO: why?
   |_  board=chess-board
   ++  $
     ^-  (list tape)
@@ -256,10 +296,13 @@
     ?~  rank
       result
     %=  $
-      result  [(rank-to-tape u.rank) result]
-      rank    (next-rank u.rank)
+      ::  add rank to list result
+        result  [(rank-to-tape u.rank) result]
+      ::  increment rank
+        rank    (next-rank u.rank)
     ==
   ++  rank-to-tape
+  ::  TODO: why?
     |=  rank=chess-rank
     ^-  tape
     =/  file    `(unit chess-file)`[~ %h]
@@ -269,10 +312,18 @@
       [(scot %ud rank) result]
     =/  square  (~(get by board) [u.file rank])
     ?~  square
-      $(result ['|' ' ' result], file (prev-file u.file))
-    $(result ['|' (unicode-piece u.square) result], file (prev-file u.file))
+      %=  $
+        result  ['|' ' ' result]
+        file    (prev-file u.file)
+      ==
+    %=  $
+      result  ['|' (unicode-piece u.square) result]
+      file    (prev-file u.file)
+    ==
   --
 ++  position-to-fen
+  ::  render whole position
+  ::  as forsyth-edwards notation
   |_  chess-position
   ++  $
     ^-  @t
@@ -346,13 +397,20 @@
       ==
   --
 ++  fen-to-position
+  ::  TODO: would render position
+  ::  out from fen, but not implemented 
   |=  fen=@t
   ~&  %not-implemented  !!
 --
+::
++|  %game-logic
+::
+::  miscellaneous game logic
 |%
 ++  with-board
   |_  board=chess-board
   ++  white-king
+    ::  scan the board for a white king
     ^-  chess-square
     ~|  'missing white king'
     =<  p  %-  head
@@ -360,6 +418,7 @@
     |=  [square=chess-square piece=chess-piece]
     =([%white %king] piece)
   ++  black-king
+    ::  scan the board for a black king
     ^-  chess-square
     ~|  'missing black king'
     =<  p  %-  head
