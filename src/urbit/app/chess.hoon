@@ -9,7 +9,6 @@
 +$  versioned-state
   $%  state-0
   ==
-::  define state structure for each game
 +$  active-game-state
   $:  game=chess-game
       position=chess-position
@@ -17,7 +16,6 @@
       sent-draw-offer=?
       got-draw-offer=?
   ==
-::  define state structure for %chess
 +$  state-0
   $:  %0
       games=(map @dau active-game-state)
@@ -39,6 +37,9 @@
 ++  on-init
   ^-  (quip card _this)
   :_  this
+  ::
+  ::  TODO: these are initialization steps from before
+  ::  the software distribution update and should be removed
   :~
     ::  get the frontend
     :*  %pass  /srv
@@ -69,42 +70,36 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+  mark  (on-poke:default mark vase)
+    ::
+    ::  pokes managing active game state and challenges
     %chess-action
-      ::
-      ::  assert source of the poke is
-      ::  our ship, or one of our moons
+      ::  only allow chess actions from our ship or our moons
       ?>  (team:title our.bowl src.bowl)
       =/  action  !<(chess-action vase)
       ?-  -.action
+        ::  manage new outgoing challenges
         %challenge
-          ::
-          ::  if we've already sent this
-          ::  ship an unanswered challenge...
+          ::  only allow one active challenge per ship
+          ::  TODO: change or display to frontend
           ?:  (~(has by challenges-sent) who.action)
-            ::  then error!
-            ::  TODO: this should display to frontend
             :_  this
             =/  err
               "already challenged {<who.action>}"
             :~  [%give %poke-ack `~[leaf+err]]
             ==
-          ::  if not, poke them with a %challenge...
+          ::  send new challenge
           :-  :~  :*  %pass  /poke/challenge  %agent  [who.action %chess]
                       %poke  %chess-challenge  !>(challenge.action)
                   ==
               ==
-          ::  and add them to our list
-          ::  of unanswered challenges
+          ::  add to list of outgoing challenges
           %=  this
             challenges-sent  (~(put by challenges-sent) +.action)
           ==
         %accept-game
           =/  challenge  (~(get by challenges-received) who.action)
-          ::
           ::  if challenge is null...
           ?~  challenge
-          ::
-          ::  error!
           ::  TODO: this should display to frontend
             :_  this
             =/  err
@@ -116,22 +111,20 @@
           ?:  ?=(%random challenger-side.u.challenge)
             =/  our-num  (shaf now.bowl eny.bowl)
             =/  our-hash  (shaf %chess-rng our-num)
-            ::
-            ::  if so, return [(list card) _this]
-            :-
-              :~
-                ::  tell our challenger we accept
-                :*  %pass  /poke/rng  %agent  [who.action %chess]
-                    %poke  %chess-rng  !>([%commit our-hash])
+            ::  if so, return (quip card _this)
+            ::  tell our challenger we accept
+            :-  :~  :*  %pass  /poke/rng  %agent  [who.action %chess]
+                        %poke  %chess-rng  !>([%commit our-hash])
+                    ==
                 ==
-              ==
             %=  this
+              ::  put player hash in rng-state
+              ::  TODO: document rng, see chess-rng in /sur/chess.hoon
               rng-state
                 %+  ~(put by rng-state)
                   who.action
                 [our-num our-hash ~ ~ |]
             ==
-          ::  if not...
           ::  assign our ships as
           ::  white and black players
           =+  ^=  [white-player black-player]
@@ -143,7 +136,6 @@
             ==
           ::  create a unique game id
           =/  game-id  (mix now.bowl (end [3 6] eny.bowl))
-          ::
           ::  initialize a record of our new game
           =/  new-game  ^-  chess-game
             :*  game-id=game-id
@@ -156,21 +148,18 @@
                 result=~
                 moves=~
             ==
-          ::  return [(list card) _this]
-          :-
-            :~
-              ::  subscribe to moves made on the
-              ::  other player's instance of this game
-              :*  %pass  /player/(scot %da game-id)
-                  %agent  [who.action %chess]
-                  %watch  /game/(scot %da game-id)/moves
+          ::  return (quip card _this)
+          ::  subscribe to moves made on the
+          ::  other player's instance of this game
+          :-  :~  :*  %pass  /player/(scot %da game-id)
+                      %agent  [who.action %chess]
+                      %watch  /game/(scot %da game-id)/moves
+                   ==
+                 ::  add our new game to the list of active games
+                   :*  %give  %fact  ~[/active-games]
+                       %chess-game  !>(new-game)
+                   ==
               ==
-              ::
-              ::  add our new game to the list of active games
-              :*  %give  %fact  ~[/active-games]
-                  %chess-game  !>(new-game)
-              ==
-            ==
           %=  this
             ::  remove our challenger from challenges-received
             challenges-received  (~(del by challenges-received) who.action)
@@ -180,7 +169,7 @@
                 (~(del by challenges-sent) our.bowl)
               challenges-sent
             ::  put our new game into the map of games
-            games                (~(put by games) game-id [new-game *chess-position | | |])
+            games  (~(put by games) game-id [new-game *chess-position | | |])
           ==
         %decline-game
           =/  challenge  (~(get by challenges-received) who.action)
@@ -194,14 +183,12 @@
               "no challenge to decline from {<who.action>}"
             :~  [%give %poke-ack `~[leaf+err]]
             ==
-          ::  if not, return [(list card) _this]
-          :-
-            :~
-              ::  tell our challenger we decline
-              :*  %pass  /poke/challenge  %agent  [who.action %chess]
-                  %poke  %chess-decline-challenge  !>(~)
+          ::  if not, return (quip card _this)
+          ::  tell our challenger we decline
+          :-  :~  :*  %pass  /poke/challenge  %agent  [who.action %chess]
+                      %poke  %chess-decline-challenge  !>(~)
+                  ==
               ==
-            ==
           %=  this
             ::  remove our challenger from challenges-received
             challenges-received  (~(del by challenges-received) who.action)
@@ -211,21 +198,18 @@
           ::
           ::  if game is null...
           ?~  game
-            ::  error!
             ::  TODO: should display to frontend
             :_  this
             =/  err
               "no active game with id {<game-id.action>}"
             :~  [%give %poke-ack `~[leaf+err]]
             ==
-          ::  else, return [(list card) _this]
-          :-
-            :~
-              ::  for this move, we just offer a draw...
-              :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
-                  %chess-draw-offer  !>(~)
+          ::  else, return (quip card _this)
+          ::  for this move, we just offer a draw...
+          :-  :~  :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
+                      %chess-draw-offer  !>(~)
+                  ==
               ==
-            ==
           ::  and note that this game
           ::  might be about to wrap up
           %=  this
@@ -237,7 +221,6 @@
           ::  we received an action with a game id,
           ::  do we have a game with that id?
           ?~  game-state
-            ::
             ::  if not, error!
             :_  this
             =/  err
@@ -246,35 +229,29 @@
             ==
           ::  else, check we recieved a draw offer
           ?.  got-draw-offer.u.game-state
-            ::
             ::  if not, error!
             :_  this
             =/  err
               "no draw offer to accept for game {<game-id.action>}"
               :~  [%give %poke-ack `~[leaf+err]]
               ==
-          ::  if so, return [(list card) _this]
-          :- 
-            :~
-              ::  for this move, we just accept the draw offer...
-              :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
-                  %chess-draw-accept  !>(~)
-              ==
-              ::
-              ::  we let the app know that this game resulted in a draw...
-              :*  %give  %fact  ~[/game/(scot %da game-id.action)/updates]
-                  %chess-update
-                  !>([%result game-id.action %'½–½'])
-              ==
-              ::
-              ::  and we unsubscribe from future updates on this game
-              :*  %give  %kick
-                  :~  /game/(scot %da game-id.action)/updates
-                      /game/(scot %da game-id.action)/moves
+          ::  if so, return (quip card _this)
+          ::  for this move, we just accept the draw offer...
+          :-  :~  :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
+                      %chess-draw-accept  !>(~)
                   ==
-                ~
+                  ::  we let the app know that this game resulted in a draw...
+                  :*  %give  %fact  ~[/game/(scot %da game-id.action)/updates]
+                      %chess-update  !>([%result game-id.action %'½–½'])
+                  ==
+                  ::  and we unsubscribe from future updates on this game
+                  :*  %give  %kick
+                      :~  /game/(scot %da game-id.action)/updates
+                          /game/(scot %da game-id.action)/moves
+                      ==
+                    ~
+                  ==
               ==
-            ==
           =/  updated-game  game.u.game-state
           =.  result.updated-game  `(unit chess-result)``%'½–½'
           %=  this
@@ -303,17 +280,15 @@
               "no draw offer to decline for game {<game-id.action>}"
               :~  [%give %poke-ack `~[leaf+err]]
               ==
-          ::  else, return [(list card) _this]
-          :-
-            :~
-              ::  for this move, we decline the draw offer
-              :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
-                  %chess-draw-decline  !>(~)
+          ::  else, return (quip card _this)
+          ::  for this move, we decline the draw offer
+          :-  :~  :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
+                      %chess-draw-decline  !>(~)
+                  ==
               ==
-            ==
           %=  this
             ::  add this to the game's state
-              games  (~(put by games) game-id.action u.game(got-draw-offer |))
+            games  (~(put by games) game-id.action u.game(got-draw-offer |))
           ==
         %move
           =/  game-state  (~(get by games) game-id.action)
@@ -344,7 +319,6 @@
             ==
           ::  assert that it should be our move
           ?>  ?=([%ship @p] ship-to-move)
-          ::
           ::  is the move coming from our ship or our moons?
           ?.  (team:title +.ship-to-move src.bowl)
             ::  if not, error!
@@ -366,31 +340,30 @@
             ^-  (list card)
             :~  [%give %poke-ack `~[leaf+err]]
             ==
-          ::  if not, return [(list card) _this]
+          ::  if not, return (quip card _this)
           =,  u.new.move-result
           :-
           %+  weld
             cards.move-result
           ^-  (list card)
-            :~
-              ::  if we've passed all these checks, send the chess move
-              :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
+          ::  if we've passed all these checks, send the chess move
+          :~  :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
                   %chess-move  !>(move.action)
               ==
-            ==
+          ==
           ::  check if the game's end result is still null
           ?.  ?=(~ result.game)
             ::  if not, end and archive the game
             %=  this
-                games    (~(del by games) game-id.action)
-                archive  (~(put by archive) game-id.action game)
+              games    (~(del by games) game-id.action)
+              archive  (~(put by archive) game-id.action game)
             ==
           ::  else, begin the next move
           %=  this
-              games
-                %+  ~(put by games)
-                 game-id.action
-              [game position |2.u.game-state]
+            games
+              %+  ~(put by games)
+               game-id.action
+            [game position |2.u.game-state]
           ==
       ==
     %chess-challenge
