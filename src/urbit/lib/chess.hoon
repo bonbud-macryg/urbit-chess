@@ -402,11 +402,11 @@
   |=  fen=@t
   ~&  %not-implemented  !!
 --
+|%
 ::
 +|  %game-logic
 ::
 ::  miscellaneous game logic
-|%
 ++  with-board
   |_  board=chess-board
   ++  white-king
