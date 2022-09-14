@@ -65,6 +65,8 @@ export type GameID = string
 
 export type FENPosition = string
 
+export type HalfmoveClock = number
+
 export type GameInfo = {
   gameID: GameID,
   event: string,
@@ -110,6 +112,7 @@ export interface PositionUpdate extends ChessUpdate {
   chessUpdate: Update.Position
   gameID: GameID
   position: FENPosition
+  halfmoveClock: HalfmoveClock
 }
 
 export interface ResultUpdate extends ChessUpdate {

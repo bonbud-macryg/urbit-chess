@@ -135,6 +135,7 @@
   ::  position of en passant pawn, if one exists
     en-passant=(unit chess-square)
   ::  how close are we to invoking the 50-move rule?
+    ::  this is a halfmove clock
     ply-50-move-rule=@
   ::  how many moves have there been?
     move-number=@
