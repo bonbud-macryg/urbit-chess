@@ -234,6 +234,7 @@
       [%offer-draw game-id=@dau]
       [%accept-draw game-id=@dau]
       [%decline-draw game-id=@dau]
+      [%fifty-move-draw game-id=@dau]
       [%move game-id=@dau move=chess-move]
   ==
 ::

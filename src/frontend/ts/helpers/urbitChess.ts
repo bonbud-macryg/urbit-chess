@@ -1,5 +1,5 @@
 import Urbit from '@urbit/http-api'
-import { Side, CastleSide, PromotionRole, Result, Action, MoveActionAction, GameID, Rank, File, Ship, ChessAction, ChessChallengeAction, ChessAcceptAction, ChessDeclineAction, ChessGameAction, OfferDrawAction, AcceptDrawAction, DeclineDrawAction, MoveAction, MoveMoveAction, CastleMoveAction, EndMoveAction } from '../types/urbitChess'
+import { Side, CastleSide, PromotionRole, Result, Action, MoveActionAction, GameID, Rank, File, Ship, ChessAction, ChessChallengeAction, ChessAcceptAction, ChessDeclineAction, ChessGameAction, OfferDrawAction, AcceptDrawAction, DeclineDrawAction, MoveAction, MoveMoveAction, CastleMoveAction, EndMoveAction, FiftyMoveAction } from '../types/urbitChess'
 
 function emptyFunction (): void {}
 
@@ -113,4 +113,13 @@ export function declineDraw (gameId: GameID): DeclineDrawAction {
   }
 
   return move
+}
+
+export function fiftyMoveDraw (gameId: GameID): FiftyMoveAction {
+  const action: FiftyMoveAction = {
+    'chess-action': Action.FiftyMoveDraw,
+    'game-id': gameId
+  }
+
+  return action
 }

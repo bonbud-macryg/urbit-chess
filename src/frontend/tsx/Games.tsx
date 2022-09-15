@@ -1,5 +1,5 @@
 import React from 'react'
-import { pokeAction, resign, offerDraw } from '../ts/helpers/urbitChess'
+import { pokeAction, resign, offerDraw, fiftyMoveDraw } from '../ts/helpers/urbitChess'
 import { Side, GameID, GameInfo, ActiveGameInfo } from '../ts/types/urbitChess'
 import useChessStore from '../ts/state/chessStore'
 
@@ -22,9 +22,16 @@ export function Games () {
     await pokeAction(urbit, offerDraw(gameID), null, () => { offeredDraw(gameID) })
   }
 
+  const fiftyMoveDrawClick = async() => {
+    const gameID = displayGame.info.gameID
+    await pokeAction(urbit, fiftyMoveDraw(gameID))
+  }
+
   return (
     <div className='games-container col'>
       <div className='game-options col'>
+        {/* 50-move-draw button should be inserted here if (gte ply-50-move 100) */}
+        {/* No actually it should just replace the 'offer draw' button */}
         <button
           className='option'
           disabled={!hasGame || displayGame.sentDrawOffer}

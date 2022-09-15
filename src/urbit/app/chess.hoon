@@ -290,6 +290,43 @@
             ::  add this to the game's state
             games  (~(put by games) game-id.action u.game(got-draw-offer |))
           ==
+        %fifty-move-draw
+          =/  game  (~(get by games) game-id.action)
+          ::
+          ::  check this is a valid game-id
+          ?~  game
+            ::  if not, error!
+            :_  this
+            =/  err
+              "no active game with id {<game-id.action>}"
+            :~  [%give %poke-ack `~[leaf+err]]
+            ==
+          ::  TODO: else, check the halfmove clock
+          ::  else, accept the draw claim 
+          ::  and return (quip card _this)
+          :-  :~  :*  %give  %fact  ~[/game/(scot %da game-id.action)/moves]
+                      %chess-draw-fifty-moves  !>(~)
+                  ==
+                  ::  we let the app know that this game resulted in a draw...
+                  :*  %give  %fact  ~[/game/(scot %da game-id.action)/updates]
+                      %chess-update  !>([%result game-id.action %'½–½'])
+                  ==
+                  ::  and we unsubscribe from future updates on this game
+                  :*  %give  %kick
+                      :~  /game/(scot %da game-id.action)/updates
+                          /game/(scot %da game-id.action)/moves
+                      ==
+                    ~
+                  ==
+              ==
+          =/  updated-game  game.u.game-state
+          =.  result.updated-game  `(unit chess-result)``%'½–½'
+          %=  this
+            ::  remove this game from our map of active games
+            games    (~(del by games) game-id.action)
+            ::  add this game to our archive
+            archive  (~(put by archive) game-id.action updated-game)
+          ==
         %move
           =/  game-state  (~(get by games) game-id.action)
           ::
@@ -727,8 +764,8 @@
                           %chess-update
                           !>([%result u.game-id %'½–½'])
                       ==
-                      :*  %give  %kick  :~  /game/(scot %da u.game-id)/updates
-                                            /game/(scot %da u.game-id)/moves
+                      :*  %give  %kick  :~  /game/(scot %da u.game-id)/moves
+                                            /game/(scot %da u.game-id)/updates
                                         ==
                           ~
                       ==
@@ -746,6 +783,29 @@
                   ==
               %=  this
                 games    (~(put by games) u.game-id u.game-state(sent-draw-offer |))
+              ==
+            %chess-draw-fifty-moves
+              ::
+              ::  check that this game's halfmove clock is >= 100
+              =/  halfmove-clock  ply-50-move-rule.position.u.game-state
+              ?.  (gte halfmove-clock 100)
+                ::  if not, they're cheating!
+                ::  TODO: should display to frontend
+                [~ this]
+              ::  else, return (quip card _this)
+              :- :~  :*  %give  %fact  ~[/game/(scot %da u.game-id)/updates]
+                         %chess-update  !>([%result u.game-id %'½–½'])
+                     ==
+                     :*  %give  %kick  :~  /game/(scot %da u.game-id)/moves
+                                           /game/(scot %da u.game-id)/updates
+                                       ==
+                         ~
+                     ==
+              =/  updated-game  game.u.game-state
+              =.  result.updated-game  `%'½–½'
+              %=  this
+                games    (~(del by games) u.game-id)
+                archive  (~(put by archive) u.game-id updated-game)
               ==
             %chess-move
               ?.  =([%ship src.bowl] ship-to-move)

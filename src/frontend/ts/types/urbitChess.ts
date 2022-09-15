@@ -42,6 +42,7 @@ export enum Action {
   OfferDraw = 'offer-draw',
   AcceptDraw = 'accept-draw',
   DeclineDraw = 'decline-draw',
+  FiftyMoveDraw = 'fifty-move-draw',
   Move = 'move'
 }
 
@@ -168,6 +169,10 @@ export interface AcceptDrawAction extends ChessGameAction {
 
 export interface DeclineDrawAction extends ChessGameAction {
   'chess-action': Action.DeclineDraw
+}
+
+export interface FiftyMoveAction extends ChessGameAction {
+  'chess-action': Action.FiftyMoveDraw
 }
 
 // Moves
