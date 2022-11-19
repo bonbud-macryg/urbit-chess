@@ -21,7 +21,7 @@
         :-  %a
         %+  turn
           (algebraicize-and-number:chess game)
-        |=(ply=@t :-(%s ply))
+        |=(san=@t :-(%s san))
     ==
   --
 ++  grad  %noun
