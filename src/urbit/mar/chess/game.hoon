@@ -9,15 +9,19 @@
   |%
   ++  noun  game
   ++  json
-    =+  game
     %-  pairs:enjs
-    :~  ['gameID' [%s (scot %da game-id)]]
-        ['event' [%s event]]
-        ['site' [%s site]]
-        ['round' [%s (round-string:chess round)]]
-        ['white' [%s (player-string:chess white)]]
-        ['black' [%s (player-string:chess black)]]
-        ['result' [%s ?~(result '' u.result)]]
+    :~  ['gameID' [%s (scot %da game-id.game)]]
+        ['event' [%s event.game]]
+        ['site' [%s site.game]]
+        ['round' [%s (round-string:chess round.game)]]
+        ['white' [%s (player-string:chess white.game)]]
+        ['black' [%s (player-string:chess black.game)]]
+        ['result' [%s ?~(result.game '' u.result.game)]]
+        :-  'moves'
+        :-  %a
+        %+  turn
+          (algebraicize-and-number:chess game)
+        |=(ply=@t :-(%s ply))
     ==
   --
 ++  grad  %noun
