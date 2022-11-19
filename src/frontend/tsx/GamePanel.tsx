@@ -55,7 +55,7 @@ export function GamePanel () {
           <p> 00  ply ply</p>
         </div>
         <div id="our-player" className={'player row' + (hasGame ? '' : ' invisible')}>
-          <p>~sampel-palnet</p>
+          <p>~{window.ship}</p>
         </div>
         <div id="our-timer" className={'timer row' + (hasGame ? '' : ' invisible')}>
           <p>00:00</p>
