@@ -158,15 +158,6 @@ div.game-container {
   justify-content: center;
 }
 
-div.title-container {
-  grid-area: top;
-  height: calc(max(10vh, 72px) - max(min(2vh, 2vw), 14px));
-  width: calc(max(75vw, 960px) - calc(2 * max(min(2vh, 2vw), 14px)));
-  display: grid;
-  align-items: center;
-  justify-items: center;
-}
-
 div.turn-container {
   grid-area: bottom;
   height: calc(max(10vh, 72px) - max(min(2vh, 2vw), 14px));
