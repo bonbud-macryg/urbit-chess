@@ -6,7 +6,9 @@ import { Side, GameID, GameInfo, ActiveGameInfo } from '../ts/types/urbitChess'
 export function GamePanel () {
   const { urbit, displayGame, setDisplayGame, offeredDraw, practiceBoard, setPracticeBoard } = useChessStore()
   const hasGame: boolean = (displayGame !== null)
-  const opponent = !hasGame ? '~sampel-palnet' : (urbit.ship === displayGame.info.white.substring(1)) ? displayGame.info.black : displayGame.info.white
+  const opponent = !hasGame ? '~sampel-palnet' : (urbit.ship === displayGame.info.white.substring(1))
+    ? displayGame.info.black
+    : displayGame.info.white
 
   const resignOnClick = async () => {
     const gameID = displayGame.info.gameID
