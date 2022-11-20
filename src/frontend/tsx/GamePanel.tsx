@@ -22,10 +22,10 @@ export function GamePanel () {
   return (
     <div className='game-panel-container col'>
       <div className="game-panel col">
-        <div id="opp-timer" className={'timer row' + (hasGame ? '' : ' invisible')}>
+        <div id="opp-timer" className={'timer row' + (hasGame ? '' : ' hidden')}>
           <p>00:00</p>
         </div>
-        <div id="opp-player" className={'player row' + (hasGame ? '' : ' invisible')}>
+        <div id="opp-player" className={'player row' + (hasGame ? '' : ' hidden')}>
           <p>{opponent}</p>
         </div>
         <div className="moves col">
@@ -55,10 +55,10 @@ export function GamePanel () {
           <p> 00  ply ply</p>
           <p> 00  ply ply</p>
         </div>
-        <div id="our-player" className={'player row' + (hasGame ? '' : ' invisible')}>
+        <div id="our-player" className={'player row' + (hasGame ? '' : ' hidden')}>
           <p>~{window.ship}</p>
         </div>
-        <div id="our-timer" className={'timer row' + (hasGame ? '' : ' invisible')}>
+        <div id="our-timer" className={'timer row' + (hasGame ? '' : ' hidden')}>
           <p>00:00</p>
         </div>
         {/* buttons */}
