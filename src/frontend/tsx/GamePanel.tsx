@@ -31,7 +31,7 @@ export function GamePanel () {
           <p>{opponent}</p>
         </div>
         <div className="moves col">
-          <div className="moves-divider"></div>
+        {/* displayGame.info.moves */}
           <p> 00  ply ply</p>
           <p> 00  ply ply</p>
           <p> 00  ply ply</p>
