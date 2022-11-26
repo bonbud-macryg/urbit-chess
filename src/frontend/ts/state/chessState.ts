@@ -1,9 +1,10 @@
 import Urbit from '@urbit/http-api'
-import { Ship, GameID, GameInfo, ActiveGameInfo, Challenge, ChessUpdate, ChallengeUpdate } from '../types/urbitChess'
+import { Ship, GameID, SAN, GameInfo, ActiveGameInfo, Challenge, ChessUpdate, ChallengeUpdate } from '../types/urbitChess'
 
 interface ChessState {
   urbit: Urbit | null;
   displayGame: ActiveGameInfo | null;
+  displayMoves: Array<SAN> | null;
   practiceBoard: String | null;
   activeGames: Map<GameID, ActiveGameInfo>;
   incomingChallenges: Map<Ship, Challenge>;

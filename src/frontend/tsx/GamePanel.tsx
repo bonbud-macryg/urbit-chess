@@ -4,7 +4,7 @@ import { pokeAction, resign, offerDraw } from '../ts/helpers/urbitChess'
 import { Side, GameID, GameInfo, ActiveGameInfo } from '../ts/types/urbitChess'
 
 export function GamePanel () {
-  const { urbit, displayGame, setDisplayGame, offeredDraw, practiceBoard, setPracticeBoard } = useChessStore()
+  const { urbit, displayGame, displayMoves, setDisplayGame, offeredDraw, practiceBoard, setPracticeBoard } = useChessStore()
   const hasGame: boolean = (displayGame !== null)
   const opponent = !hasGame ? '~sampel-palnet' : (urbit.ship === displayGame.info.white.substring(1))
     ? displayGame.info.black
@@ -31,31 +31,15 @@ export function GamePanel () {
           <p>{opponent}</p>
         </div>
         <div className="moves col">
-        {/* displayGame.info.moves */}
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
-          <p> 00  ply ply</p>
+        <ul className="move-list">
+          {
+          Array.from(displayMoves).map((move) => {
+            return (
+              <li className="move">{move}</li>
+            )
+          })
+        }
+        </ul>
         </div>
         <div id="our-player" className={'player row' + (hasGame ? '' : ' hidden')}>
           <p>~{window.ship}</p>

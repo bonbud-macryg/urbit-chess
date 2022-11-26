@@ -1,17 +1,25 @@
 import create from 'zustand'
 import Urbit from '@urbit/http-api'
 import { CHESS } from '../constants/chess'
-import { Update, Ship, GameID, GameInfo, ActiveGameInfo, Challenge, ChessUpdate, ChallengeUpdate, PositionUpdate, ResultUpdate, DrawOfferUpdate, DrawDeclinedUpdate } from '../types/urbitChess'
+import { Update, Ship, GameID, SAN, GameInfo, ActiveGameInfo, Challenge, ChessUpdate, ChallengeUpdate, PositionUpdate, ResultUpdate, DrawOfferUpdate, DrawDeclinedUpdate } from '../types/urbitChess'
 import ChessState from './chessState'
 
 const useChessStore = create<ChessState>((set, get) => ({
   urbit: null,
   displayGame: null,
+  displayMoves: [''],
   practiceBoard: '',
   activeGames: new Map(),
   incomingChallenges: new Map(),
   setUrbit: (urbit: Urbit) => set({ urbit }),
-  setDisplayGame: (displayGame: ActiveGameInfo | null) => set({ displayGame }),
+  setDisplayGame: (displayGame: ActiveGameInfo | null) => {
+    set({ displayGame })
+    // XX: "GameInfo or ActiveGameInfo?" conditional logic
+    //
+    //     might be necessary depending on how we implement
+    //     the "view completed games" feature
+    set(state => ({ displayMoves: displayGame.info.moves }))
+  },
   setPracticeBoard: (practiceBoard: String | null) => set({ practiceBoard }),
   receiveChallenge: (data: ChallengeUpdate) =>
     set(state => ({ incomingChallenges: state.incomingChallenges.set(data.who, data as Challenge) })),

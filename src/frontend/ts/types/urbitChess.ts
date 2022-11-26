@@ -67,6 +67,11 @@ export type FENPosition = string
 
 export type SAN = string
 
+// XX: should we add position: FENPosition to GameInfo?
+//
+//     this might make it simple to see the latest position
+//     in a finished game when we get it from archived-games.
+//     this might require some work across the frontend code.
 export type GameInfo = {
   gameID: GameID,
   event: string,
