@@ -10,6 +10,7 @@ interface ChessState {
   incomingChallenges: Map<Ship, Challenge>;
   setUrbit: (urbit: Urbit) => void;
   setDisplayGame: (displayGame: ActiveGameInfo | null) => void;
+  setDisplayMoves: (displayMoves: Array<SAN> | null) => void;
   setPracticeBoard: (practiceBoard: String | null) => void;
   receiveChallenge: (data: ChallengeUpdate) => void;
   receiveGame: (data: GameInfo) => void;

@@ -18,8 +18,10 @@ const useChessStore = create<ChessState>((set, get) => ({
     //
     //     might be necessary depending on how we implement
     //     the "view completed games" feature
-    set(state => ({ displayMoves: displayGame.info.moves }))
+    get().setDisplayMoves(displayGame.info.moves)
   },
+  setDisplayMoves: (displayMoves: Array<SAN> | null) =>
+    set(state => ({ displayMoves })),
   setPracticeBoard: (practiceBoard: String | null) => set({ practiceBoard }),
   receiveChallenge: (data: ChallengeUpdate) =>
     set(state => ({ incomingChallenges: state.incomingChallenges.set(data.who, data as Challenge) })),
@@ -54,12 +56,13 @@ const useChessStore = create<ChessState>((set, get) => ({
       case Update.Position: {
         const positionData = data as PositionUpdate
         const gameID = positionData.gameID
-
         const currentGame = get().activeGames.get(gameID)
+        // XX: get new GameInfo
         const updatedGame: ActiveGameInfo = {
           position: positionData.position,
           gotDrawOffer: currentGame.gotDrawOffer,
           sentDrawOffer: currentGame.sentDrawOffer,
+          // XX: set new GameInfo
           info: currentGame.info
         }
 
@@ -69,6 +72,7 @@ const useChessStore = create<ChessState>((set, get) => ({
         console.log('RECEIVED POSITION UPDATE')
         break
       }
+
       case Update.Result: {
         const resultData = data as ResultUpdate
         const gameID = resultData.gameID
@@ -86,6 +90,7 @@ const useChessStore = create<ChessState>((set, get) => ({
         console.log('RECEIVED RESULT UPDATE')
         break
       }
+
       case Update.DrawOffer: {
         const offerData = data as DrawOfferUpdate
         const gameID = offerData.gameID
@@ -104,6 +109,7 @@ const useChessStore = create<ChessState>((set, get) => ({
         console.log('RECEIVED DRAW OFFER UPDATE')
         break
       }
+
       case Update.DrawDeclined: {
         const declineData = data as DrawDeclinedUpdate
         const gameID = declineData.gameID
@@ -122,6 +128,7 @@ const useChessStore = create<ChessState>((set, get) => ({
         console.log('RECEIVED DRAW DECLINE UPDATE')
         break
       }
+
       default: {
         console.log('RECEIVED BAD UPDATE')
         console.log(data.chessUpdate)
