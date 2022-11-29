@@ -243,7 +243,7 @@
 ::  subscriber may receive as a %fact from the chess agent
 +$  chess-update
   $%  [%challenge who=ship challenge=chess-challenge]
-      [%position game-id=@dau position=@t]
+      [%position game-id=@dau position=@t san=@t]
       [%result game-id=@dau result=chess-result]
       [%draw-offer game-id=@dau]
       [%draw-declined game-id=@dau]

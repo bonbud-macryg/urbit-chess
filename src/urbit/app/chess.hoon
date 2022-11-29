@@ -451,7 +451,10 @@
         ==
       =/  fen  (position-to-fen u.new-position)
       :-  :~  :*  %give  %fact  ~[/game/(scot %da game-id.action)/updates]
-                  %chess-update  !>([%position game-id.action fen])
+                  ::  XX: could replace ++rear of algebraicizing
+                  ::      whole move list with arm algebraicizing
+                  ::      just the one move
+                  %chess-update  !>([%position game-id.action fen (rear (algebraicize game.action))])
               ==
           ==
       %=  this
@@ -627,7 +630,7 @@
       =/  fen  (position-to-fen position.game-state)
       =/  cards  ^-  (list card)
         :~  :*  %give  %fact  ~[/game/(scot %da u.game-id)/updates]
-                %chess-update  !>([%position u.game-id fen])
+                %chess-update  !>([%position u.game-id fen (rear (algebraicize game.game-state))])
             ==
         ==
       =?  cards  got-draw-offer.game-state
@@ -791,7 +794,7 @@
   =/  fen  (position-to-fen u.new-position)
   =/  position-update-card
     :*  %give  %fact  ~[/game/(scot %da game-id.game)/updates]
-        %chess-update  !>([%position game-id.game fen])
+        %chess-update  !>([%position game-id.game fen (rear (algebraicize updated-game))])
     ==
   =/  in-checkmate  ~(in-checkmate with-position u.new-position)
   =/  in-stalemate  ?:  in-checkmate

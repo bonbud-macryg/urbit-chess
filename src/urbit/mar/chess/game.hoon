@@ -17,6 +17,9 @@
         ['white' [%s (player-string:chess white.game)]]
         ['black' [%s (player-string:chess black.game)]]
         ['result' [%s ?~(result.game '' u.result.game)]]
+        ::  XX: amend this, don't want to use
+        ::      algebraicize-and-number if each
+        ::      ply is clickable
         :-  'moves'
         :-  %a
         %+  turn

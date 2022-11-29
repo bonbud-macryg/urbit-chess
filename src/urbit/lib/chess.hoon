@@ -1266,6 +1266,8 @@
 ::
 ::  keep count of every move
 ::  add the move number to chess notation
+::  XX: should we remove this if we're not only not using
+::      it, but won't use it due to undo functionality?
 ++  algebraicize-and-number
   |=  game=chess-game
   ^-  (list @t)
