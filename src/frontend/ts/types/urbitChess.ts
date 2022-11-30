@@ -118,7 +118,7 @@ export interface PositionUpdate extends ChessUpdate {
   chessUpdate: Update.Position
   gameID: GameID
   position: FENPosition
-  moves: SAN | null
+  move: SAN | null
 }
 
 export interface ResultUpdate extends ChessUpdate {

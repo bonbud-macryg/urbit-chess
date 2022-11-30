@@ -630,8 +630,7 @@
       =/  fen  (position-to-fen position.game-state)
       =/  cards  ^-  (list card)
         :~  :*  %give  %fact  ~[/game/(scot %da u.game-id)/updates]
-                ::  XX: seems to be error here on some new moves
-                %chess-update  !>([%position u.game-id fen ?~(moves.game.game-state '' (rear (algebraicize game.game-state)))])
+                %chess-update  !>([%position u.game-id fen ?~(moves.game.game-state 'null' (rear (algebraicize game.game-state)))])
             ==
         ==
       =?  cards  got-draw-offer.game-state
@@ -767,8 +766,14 @@
                   archive  (~(put by archive) u.game-id game)
                 ==
               ::  add new games to our list
+              ::  XX: could this be where position update
+              ::      isn't getting move data?
               %=  this
                 games  %+  ~(put by games)  u.game-id
+                       ::  active-game-state
+                         ::  chess-game
+                         ::  position
+                         ::  etc.
                        [game position |2.u.game-state]
               ==
           ==
