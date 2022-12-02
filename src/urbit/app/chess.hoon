@@ -630,7 +630,9 @@
       =/  fen  (position-to-fen position.game-state)
       =/  cards  ^-  (list card)
         :~  :*  %give  %fact  ~[/game/(scot %da u.game-id)/updates]
-                %chess-update  !>([%position u.game-id fen ?~(moves.game.game-state 'null' (rear (algebraicize game.game-state)))])
+                :: XX: this line is causing trouble; 'app/null' rather than ~
+                ::     just flags it up
+                %chess-update  !>([%position u.game-id fen ?~(moves.game.game-state 'app/null' (rear (algebraicize game.game-state)))])
             ==
         ==
       =?  cards  got-draw-offer.game-state

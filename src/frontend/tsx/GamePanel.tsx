@@ -1,7 +1,7 @@
 import React from 'react'
 import useChessStore from '../ts/state/chessStore'
 import { pokeAction, resign, offerDraw } from '../ts/helpers/urbitChess'
-import { Side, GameID, GameInfo, ActiveGameInfo } from '../ts/types/urbitChess'
+import { Side, GameID, SAN, GameInfo, ActiveGameInfo } from '../ts/types/urbitChess'
 
 export function GamePanel () {
   const { urbit, displayGame, displayMoves, setDisplayGame, offeredDraw, practiceBoard, setPracticeBoard } = useChessStore()
@@ -21,6 +21,17 @@ export function GamePanel () {
     await pokeAction(urbit, offerDraw(gameID), null, () => { offeredDraw(gameID) })
   }
 
+  // from stackoverflow, only slightly modified to satisfy
+  // type checker
+  function sliceIntoChunks(arr: Array<SAN>, chunkSize: number) {
+    const res = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+        const chunk = arr.slice(i, i + chunkSize);
+        res.push(chunk);
+    }
+    return res;
+}
+
   return (
     <div className='game-panel-container col'>
       <div className="game-panel col">
@@ -31,15 +42,15 @@ export function GamePanel () {
           <p>{opponent}</p>
         </div>
         <div className="moves col">
-        <ul className="move-list">
+        <ol>
           {
-          Array.from(displayMoves).map((move) => {
-            return (
-              <li className="move">{move}</li>
-            )
-          })
-        }
-        </ul>
+            Array.from(sliceIntoChunks(displayMoves, 2).map(([ply1, ply2]) => {
+              return (
+                <li>{ ply1 + ' ' + ply2 }</li>
+              )
+            }))
+          }
+        </ol>
         </div>
         <div id="our-player" className={'player row' + (hasGame ? '' : ' hidden')}>
           <p>~{window.ship}</p>
