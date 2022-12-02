@@ -21,17 +21,6 @@ export function GamePanel () {
     await pokeAction(urbit, offerDraw(gameID), null, () => { offeredDraw(gameID) })
   }
 
-  // from stackoverflow, only slightly modified to satisfy
-  // type checker
-  function sliceIntoChunks(arr: Array<SAN>, chunkSize: number) {
-    const res = [];
-    for (let i = 0; i < arr.length; i += chunkSize) {
-        const chunk = arr.slice(i, i + chunkSize);
-        res.push(chunk);
-    }
-    return res;
-}
-
   return (
     <div className='game-panel-container col'>
       <div className="game-panel col">
@@ -43,13 +32,19 @@ export function GamePanel () {
         </div>
         <div className="moves col">
         <ol>
-          {
-            Array.from(sliceIntoChunks(displayMoves, 2).map(([ply1, ply2]) => {
+        {
+          Array.from(displayMoves).map((ply) => {
+            if (displayMoves.indexOf(ply) % 2 !== 0) {
               return (
-                <li>{ ply1 + ' ' + ply2 }</li>
-              )
-            }))
-          }
+              <li>
+                {
+                  ply + (displayMoves.indexOf(ply) + 1 > displayMoves.length ? '' : ' ' + displayMoves.at(displayMoves.indexOf(ply) + 1))
+                }
+              </li>
+            )
+            }
+          })
+        }
         </ol>
         </div>
         <div id="our-player" className={'player row' + (hasGame ? '' : ' hidden')}>
