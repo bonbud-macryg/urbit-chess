@@ -13,12 +13,22 @@ const useChessStore = create<ChessState>((set, get) => ({
   incomingChallenges: new Map(),
   setUrbit: (urbit: Urbit) => set({ urbit }),
   setDisplayGame: (displayGame: ActiveGameInfo | null) => {
-    set({ displayGame })
-    // XX: "GameInfo or ActiveGameInfo?" conditional logic
-    //
-    //     might be necessary depending on how we implement
-    //     the "view completed games" feature
-    get().setDisplayMoves(displayGame.info.moves)
+    if (displayGame !== null) {
+      set({ displayGame })
+      // XX: "GameInfo or ActiveGameInfo?" conditional logic
+      //
+      //     might be necessary depending on how we implement
+      //     the "view completed games" feature
+      get().setDisplayMoves(displayGame.info.moves)
+    } else {
+      // XX: get moves list working for practice games
+      //
+      //     will require work in Chessboard.tsx, perhaps
+      //     work on the backend e.g. a new poke to just
+      //     get the PositionUpdate through /updates wire
+      set({ displayGame })
+      get().setDisplayMoves([])
+    }
   },
   setDisplayMoves: (displayMoves: Array<SAN>) =>
     set(state => ({ displayMoves })),
@@ -70,7 +80,9 @@ const useChessStore = create<ChessState>((set, get) => ({
         set(state => ({ activeGames: state.activeGames.set(gameID, updatedGame) }))
         updateDisplayGame(updatedGame)
 
-        console.log('RECEIVED POSITION UPDATE' + ' ' + updatedGame.info.moves)
+        // DD
+        // console.log('RECEIVED POSITION UPDATE: ' + updatedGame.info.moves)
+        console.log('RECEIVED POSITION UPDATE')
         break
       }
 
