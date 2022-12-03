@@ -33,11 +33,12 @@ export function GamePanel () {
         <div className="moves col">
         <ol>
         {
-          Array.from(displayMoves).map((ply) => {
-            if (displayMoves.indexOf(ply) % 2 !== 0) {
+          Array.from(displayMoves).map((ply, thisIndex, thisArray) => {
+            const nextIndex: number = thisIndex + 1
+            if (thisIndex % 2 !== 0) {
               return (
               <li>
-                {ply} {(displayMoves.indexOf(ply) + 1 > displayMoves.length ? '' : displayMoves.at(displayMoves.indexOf(ply) + 1))}
+                {ply} {(nextIndex > thisArray.length ? '' : thisArray.at(nextIndex))}
               </li>
             )
             }
