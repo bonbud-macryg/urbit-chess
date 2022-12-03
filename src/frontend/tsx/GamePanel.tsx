@@ -35,6 +35,8 @@ export function GamePanel () {
         {
           Array.from(displayMoves).map((ply, thisIndex, thisArray) => {
             const nextIndex: number = thisIndex + 1
+            // XX: could 'app/null' have caused spacing error?
+            //     try again once that's addressed
             if (thisIndex % 2 !== 0) {
               return (
               <li>
