@@ -38,7 +38,7 @@ export function GamePanel () {
             if (thisIndex % 2 !== 0) {
               return (
               <li>
-                {ply} {(nextIndex > thisArray.length ? '' : thisArray.at(nextIndex))}
+                <span>{ply}</span> <span>{(nextIndex > thisArray.length ? '' : thisArray.at(nextIndex))}</span>
               </li>
             )
             }
