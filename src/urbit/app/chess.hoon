@@ -612,6 +612,8 @@
         challenges-sent  (~(del by challenges-sent) src.bowl)
         games  (~(put by games) u.game-id [new-game *chess-position & | |])
       ==
+    ::
+    ::  subscribe to updates on active games
     [%game @ta %updates ~]
       =/  game-id  `(unit @dau)`(slaw %da i.t.path)
       ?~  game-id
@@ -630,7 +632,7 @@
       =/  fen  (position-to-fen position.game-state)
       =/  cards  ^-  (list card)
         :~  :*  %give  %fact  ~[/game/(scot %da u.game-id)/updates]
-                %chess-update  !>([%position u.game-id fen ?~(moves.game.game-state '' (rear (algebraicize game.game-state)))])
+                %chess-update  !>([%position u.game-id fen ''])
             ==
         ==
       =?  cards  got-draw-offer.game-state
