@@ -330,6 +330,17 @@
             archive  (~(put by archive) game-id.action updated-game)
           ==
         %move
+          ?~  game-id.action
+            ::  if practice move…
+            ::  XX: figure out a wire
+            :-  :~  :*  %give  %fact  ~[/game/~/updates]
+                        ::  XX: include position?
+                        ::  XX: include special draw?
+                        ::  XX: include move.
+                        %chess-update  !>[(%position ~ !! !! !!)]
+                    ==
+                ==
+            this
           =/  game-state  (~(get by games) game-id.action)
           ::  check for valid game
           ?~  game-state
@@ -345,7 +356,6 @@
               "opponent not subscribed yet"
             :~  [%give %poke-ack `~[leaf+err]]
             ==
-          ::  else, check whose move it should be right now
           =/  ship-to-move
             ?-  player-to-move.position.u.game-state
               %white

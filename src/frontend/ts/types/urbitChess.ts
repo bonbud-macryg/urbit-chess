@@ -168,7 +168,7 @@ export interface ChessDeclineAction extends ChessAction {
 }
 
 export interface ChessGameAction extends ChessAction {
-  'game-id': GameID
+  'game-id': GameID | null
 }
 
 export interface OfferDrawAction extends ChessGameAction {
